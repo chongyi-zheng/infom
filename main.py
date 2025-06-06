@@ -22,7 +22,7 @@ from utils.log_utils import CsvLogger, get_exp_name, get_flag_dict, get_wandb_vi
 FLAGS = flags.FLAGS
 
 flags.DEFINE_integer('enable_wandb', 1, 'Whether to use wandb.')
-flags.DEFINE_string('wandb_run_group', 'exp', 'Run group.')
+flags.DEFINE_string('wandb_run_group', 'debug', 'Run group.')
 flags.DEFINE_string('wandb_mode', 'online', 'Wandb mode.')
 flags.DEFINE_integer('seed', 0, 'Random seed.')
 flags.DEFINE_string('env_name', 'cube-single-play-singletask-v0', 'Environment (dataset) name.')

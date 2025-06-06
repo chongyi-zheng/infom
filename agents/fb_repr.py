@@ -74,7 +74,7 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
         q = jnp.minimum(q1, q2)
         adv = q - v
 
-        exp_a = jnp.exp(adv * self.config['awr_alpha'])
+        exp_a = jnp.exp(adv * self.config['alpha_awr'])
         exp_a = jnp.minimum(exp_a, 100.0)
 
         dist = self.network.select('actor')(
@@ -187,7 +187,7 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
             q_loss = lam * q_loss
         log_prob = dist.log_prob(actions)
 
-        bc_loss = -(self.config['repr_alpha'] * log_prob).mean()
+        bc_loss = -(self.config['alpha_repr'] * log_prob).mean()
 
         actor_loss = q_loss + bc_loss
 
@@ -446,8 +446,8 @@ def get_config():
             repr_agg='min',  # Aggregation method for target forward backward representation.
             orthonorm_coeff=1.0,  # orthonormalization coefficient
             latent_mix_prob=0.5,  # Probability to replace latents sampled from gaussian with backward representations.
-            repr_alpha=10.0,  # Temperature in BC coefficient in DDPG+BC.
-            awr_alpha=10.0,  # Temperature in IQL.
+            alpha_repr=10.0,  # Temperature in BC coefficient in DDPG+BC.
+            alpha_awr=10.0,  # Temperature in IQL.
             const_std=True,  # Whether to use constant standard deviation for the actor.
             normalize_q_loss=False,  # Whether to normalize the Q loss.
             num_latent_inference_samples=10_000,  # Number of samples used to infer the task-specific latent.

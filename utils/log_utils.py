@@ -4,7 +4,6 @@ from datetime import datetime
 
 import absl.flags as flags
 import ml_collections
-import matplotlib.pyplot as plt
 import numpy as np
 import wandb
 import wandb_osh
@@ -71,7 +70,6 @@ def setup_wandb(
     mode='online',
 ):
     """Set up Weights & Biases for logging."""
-    # wandb_output_dir = tempfile.mkdtemp()
     tags = [group] if group is not None else None
 
     init_kwargs = dict(
@@ -153,98 +151,3 @@ def get_wandb_video(renders=None, n_cols=None, fps=15):
     renders = reshape_video(renders, n_cols)  # (t, c, nr * h, nc * w)
 
     return wandb.Video(renders, fps=fps, format='mp4')
-
-
-def get_wandb_heatmaps(value_info, env_info, num_max_cols=8):
-    # get walls from the env
-    # unwrapped_env = env.unwrapped
-    # tree = ET.parse(unwrapped_env.fullpath)
-    # worldbody = tree.find('.//worldbody')
-    #
-    # wall_positions = []
-    # wall_sizes = []
-    # for element in worldbody.findall(".//geom[@material='wall']"):
-    #     pos = [float(s) for s in element.get('pos').split(' ')][:2]
-    #     size = [float(s) for s in element.get('size').split(' ')][:2]
-    #
-    #     wall_positions.append(pos)
-    #     wall_sizes.append(size)
-    #
-    # wall_positions = np.array(wall_positions)
-    # wall_sizes = np.array(wall_sizes)
-    # world_ranges = np.array([wall_positions.min(axis=0), wall_positions.max(axis=0)]).T
-
-    # create the meshgrid
-    # num_grid_x = 50
-    # num_grid_y = 50
-    # grid_x = np.linspace(*world_ranges[0], num_grid_x)
-    # grid_y = np.linspace(*world_ranges[1], num_grid_y)
-    #
-    # mesh_x, mesh_y = np.array(np.meshgrid(grid_x, grid_y))
-    # mesh_grid_xys = np.stack([mesh_x, mesh_y], axis=-1)
-
-    # sample trajectories from the dataset
-    # initial_state_idxs = dataset.initial_locs[
-    #     np.searchsorted(dataset.initial_locs, np.arange(dataset.size), side='right') - 1]
-    # final_state_idxs = dataset.terminal_locs[
-    #     np.searchsorted(dataset.terminal_locs, np.arange(dataset.size))]
-    #
-    # traj_start_idxs = np.unique(initial_state_idxs)
-    # traj_end_idxs = np.unique(final_state_idxs)
-    # num_trajs = len(traj_start_idxs)
-    #
-    # if traj_idxs is None:
-    #     traj_idxs = np.random.randint(num_trajs, size=n_heatmaps)
-    #
-    # traj_observations = []
-    # for (traj_start_idx, traj_end_idx) in zip(traj_start_idxs[traj_idxs], traj_end_idxs[traj_idxs]):
-    #     observations = dataset['observations'][traj_start_idxs:traj_end_idx + 1]
-    #
-    #     traj_observations.append(observations)
-    # traj_observations = np.array(traj_observations)
-
-    # rng = jax.random.PRNGKey(np.random.randint(0, 2 ** 32))
-    # rng, seed = jax.random.split(rng)
-    # stats = estimator.evaluate_estimation(batch, seed=seed)
-    # batch = dataset.sample(n_heatmaps)
-
-    wall_positions, wall_sizes, world_ranges = (
-        env_info['wall_positions'], env_info['wall_sizes'], env_info['world_ranges'])
-    # import matplotlib.patches as patches
-
-    # rects = []
-    # for wall_pos, wall_size in zip(wall_positions, wall_sizes):
-    #     rect = plt.Rectangle(wall_pos - wall_size, wall_size[0] * 2, wall_size[1] * 2)
-    #     rects.append(rect)
-
-    mesh_x, mesh_y, observations, values = (
-        value_info['mesh_x'], value_info['mesh_y'], value_info['observations'], value_info['values'])
-    num_heatmaps = len(values)
-    num_rows = num_heatmaps // num_max_cols
-    if num_rows < 1:
-        num_cols = num_heatmaps % num_max_cols
-    else:
-        num_cols = num_max_cols
-
-    fig, axes = plt.subplots(nrows=num_rows, ncols=num_max_cols,
-                             figsize=(4.2 * num_cols, 4.4 * num_rows))
-    for observation, value, ax in zip(observations, values, axes.flatten()):
-
-        contour = ax.contourf(mesh_x, mesh_y, np.exp(value))
-        plt.colorbar(contour, ax=ax)
-
-        for wall_pos, wall_size in zip(wall_positions, wall_sizes):
-            rect = plt.Rectangle(wall_pos - wall_size, wall_size[0] * 2, wall_size[1] * 2,
-                                 color='white')
-            ax.add_patch(rect)
-
-        ax.scatter(observation[0], observation[1], s=20.0, marker='x', color='red', label=r'$s_0$')
-
-        ax.set(title='value',
-               xlabel='x', ylabel='y',
-               xlim=[*world_ranges[0]], ylim=[*world_ranges[1]])
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.25), ncol=2)
-
-    fig.tight_layout()
-
-    return wandb.Image(fig)

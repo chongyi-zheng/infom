@@ -224,69 +224,139 @@ python main.py --env_name=visual-cube-double-play-singletask-task1-v0 --pretrain
 
 ```
 # InFOM on ExORL cheetah {run, run backward, walk, walk backward}
-python main.py --env_name=cheetah_run --agent=agents/infom.py --agent.kl_weight=0.05 --agent.alpha=0.3
-python main.py --env_name=cheetah_run_backward --agent=agents/infom.py --agent.kl_weight=0.05 --agent.alpha=0.3
-python main.py --env_name=cheetah_walk --agent=agents/infom.py --agent.kl_weight=0.05 --agent.alpha=0.3
-python main.py --env_name=cheetah_walk_backward --agent=agents/infom.py --agent.kl_weight=0.05 --agent.alpha=0.3
-
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/infom.py --agent.latent_dim=128 --agent.kl_weight=0.05 --agent.alpha=0.3
 # InFOM on ExORL walker {walk, run, stand, flip}
-python main.py --env_name=walker_walk --agent=agents/infom.py --agent.kl_weight=0.1 --agent.alpha=0.3
-python main.py --env_name=walker_run --agent=agents/infom.py --agent.kl_weight=0.1 --agent.alpha=0.3
-python main.py --env_name=walker_stand --agent=agents/infom.py --agent.kl_weight=0.1 --agent.alpha=0.3
-python main.py --env_name=walker_flip --agent=agents/infom.py --agent.kl_weight=0.1 --agent.alpha=0.3
-
+python main.py --env_name={walker_walk, walker_run, walker_stand, walker_flip} --agent=agents/infom.py --agent.kl_weight=0.1 --agent.alpha=0.3
 # InFOM on ExORL quadruped {run, jump, stand, walk}
-python main.py --env_name=quadruped_run --agent=agents/infom.py --agent.kl_weight=0.005 --agent.alpha=0.3
-python main.py --env_name=quadruped_jump --agent=agents/infom.py --agent.kl_weight=0.005 --agent.alpha=0.3
-python main.py --env_name=quadruped_stand --agent=agents/infom.py --agent.kl_weight=0.005 --agent.alpha=0.3
-python main.py --env_name=quadruped_walk --agent=agents/infom.py --agent.kl_weight=0.005 --agent.alpha=0.3
-
+python main.py --env_name={quadruped_run, quadruped_jump, quadruped_stand, quadruped_walk} --agent=agents/infom.py --agent.kl_weight=0.005 --agent.alpha=0.3
 # InFOM on ExORL jaco {reach top left, reach top right, reach bottom left, reach bottom right}
-python main.py --env_name=jaco_reach_top_left --agent=agents/infom.py --agent.kl_weight=0.2 --agent.alpha=0.1
-python main.py --env_name=jaco_reach_top_right --agent=agents/infom.py --agent.kl_weight=0.2 --agent.alpha=0.1
-python main.py --env_name=jaco_reach_bottom_left --agent=agents/infom.py --agent.kl_weight=0.2 --agent.alpha=0.1
-python main.py --env_name=jaco_reach_bottom_right --agent=agents/infom.py --agent.kl_weight=0.2 --agent.alpha=0.1
+python main.py --env_name={jaco_reach_top_left, jaco_reach_top_right, jaco_reach_bottom_left, jaco_reach_bottom_right} --agent=agents/infom.py --agent.kl_weight=0.2 --agent.alpha=0.1
 
 # InFOM on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
-python main.py --env_name=cube-single-play-singletask-task1-v0 --agent=agents/infom.py --agent.kl_weight=0.05 --agent.expectile=0.95 --agent.alpha=30
-python main.py --env_name=cube-single-play-singletask-task2-v0 --agent=agents/infom.py --agent.kl_weight=0.05 --agent.expectile=0.95 --agent.alpha=30
-python main.py --env_name=cube-single-play-singletask-task3-v0 --agent=agents/infom.py --agent.kl_weight=0.05 --agent.expectile=0.95 --agent.alpha=30
-python main.py --env_name=cube-single-play-singletask-task4-v0 --agent=agents/infom.py --agent.kl_weight=0.05 --agent.expectile=0.95 --agent.alpha=30
-python main.py --env_name=cube-single-play-singletask-task5-v0 --agent=agents/infom.py --agent.kl_weight=0.05 --agent.expectile=0.95 --agent.alpha=30
-
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/infom.py --agent.kl_weight=0.05 --agent.expectile=0.95 --agent.alpha=30
 # InFOM on OGBench cube double {task 1, task 2, task 3, task 4, task 5}
-python main.py --env_name=cube-double-play-singletask-task1-v0 --agent=agents/infom.py --agent.kl_weight=0.025 --agent.expectile=0.9 --agent.alpha=30
-python main.py --env_name=cube-double-play-singletask-task2-v0 --agent=agents/infom.py --agent.kl_weight=0.025 --agent.expectile=0.9 --agent.alpha=30
-python main.py --env_name=cube-double-play-singletask-task3-v0 --agent=agents/infom.py --agent.kl_weight=0.025 --agent.expectile=0.9 --agent.alpha=30
-python main.py --env_name=cube-double-play-singletask-task4-v0 --agent=agents/infom.py --agent.kl_weight=0.025 --agent.expectile=0.9 --agent.alpha=30
-python main.py --env_name=cube-double-play-singletask-task5-v0 --agent=agents/infom.py --agent.kl_weight=0.025 --agent.expectile=0.9 --agent.alpha=30
-
+python main.py --env_name={cube-double-play-singletask-task1-v0, cube-double-play-singletask-task2-v0, cube-double-play-singletask-task3-v0, cube-double-play-singletask-task4-v0, cube-double-play-singletask-task5-v0} --agent=agents/infom.py --agent.latent_dim=128 --agent.kl_weight=0.025 --agent.expectile=0.9 --agent.alpha=30
 # InFOM on OGBench scene {task 1, task 2, task 3, task 4, task 5}
-python main.py --env_name=scene-play-singletask-task1-v0 --agent=agents/infom.py --agent.kl_weight=0.2 --agent.expectile=0.99 --agent.alpha=300
-python main.py --env_name=scene-play-singletask-task2-v0 --agent=agents/infom.py --agent.kl_weight=0.2 --agent.expectile=0.99 --agent.alpha=300
-python main.py --env_name=scene-play-singletask-task3-v0 --agent=agents/infom.py --agent.kl_weight=0.2 --agent.expectile=0.99 --agent.alpha=300
-python main.py --env_name=scene-play-singletask-task4-v0 --agent=agents/infom.py --agent.kl_weight=0.2 --agent.expectile=0.99 --agent.alpha=300
-python main.py --env_name=scene-play-singletask-task5-v0 --agent=agents/infom.py --agent.kl_weight=0.2 --agent.expectile=0.99 --agent.alpha=300
-
+python main.py --env_name={scene-play-singletask-task1-v0, scene-play-singletask-task2-v0, scene-play-singletask-task3-v0, scene-play-singletask-task4-v0, scene-play-singletask-task5-v0} --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.99 --agent.kl_weight=0.2 --agent.alpha=300
 # InFOM on OGBench puzzle 4x4 {task 1, task 2, task 3, task 4, task 5}
-python main.py --env_name=puzzle-4x4-play-singletask-task1-v0 --agent=agents/infom.py --agent.kl_weight=0.1 --agent.expectile=0.95 --agent.alpha=300
-python main.py --env_name=puzzle-4x4-play-singletask-task2-v0 --agent=agents/infom.py --agent.kl_weight=0.1 --agent.expectile=0.95 --agent.alpha=300
-python main.py --env_name=puzzle-4x4-play-singletask-task3-v0 --agent=agents/infom.py --agent.kl_weight=0.1 --agent.expectile=0.95 --agent.alpha=300
-python main.py --env_name=puzzle-4x4-play-singletask-task4-v0 --agent=agents/infom.py --agent.kl_weight=0.1 --agent.expectile=0.95 --agent.alpha=300
-python main.py --env_name=puzzle-4x4-play-singletask-task5-v0 --agent=agents/infom.py --agent.kl_weight=0.1 --agent.expectile=0.95 --agent.alpha=300
+python main.py --env_name={puzzle-4x4-play-singletask-task1-v0, puzzle-4x4-play-singletask-task2-v0, puzzle-4x4-play-singletask-task3-v0, puzzle-4x4-play-singletask-task4-v0, puzzle-4x4-play-singletask-task5-v0} --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.95 --agent.kl_weight=0.1 --agent.alpha=300
 
-# InFOM on OGBench visual cube single task1
+# InFOM on OGBench visual cube single task 1
 python main.py --env_name=visual-cube-single-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.expectile=0.95 --agent.kl_weight=0.025 --agent.alpha=30 --agent.encoder=impala_small
-# InFOM on OGBench visual cube double task1
-python main.py --env_name=visual-cube-double-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.expectile=0.95 --agent.kl_weight=0.01 --agent.alpha=30 --agent.encoder=impala_small
-# InFOM on OGBench visual scene task1
-python main.py --env_name=visual-scene-play-singletask-task1 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.expectile=0.99 --agent.kl_weight=0.1 --agent.alpha=300 --agent.encoder=impala_small
-# InFOM on OGBench visual puzzle 4x4 task1
-python main.py --env_name=visual-puzzle-4x4-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.expectile=0.95 --agent.kl_weight=0.1 --agent.alpha=300 --agent.encoder=impala_small
+# InFOM on OGBench visual cube double task 1
+python main.py --env_name=visual-cube-double-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.95 --agent.kl_weight=0.01 --agent.alpha=30 --agent.encoder=impala_small
+# InFOM on OGBench visual scene task 1
+python main.py --env_name=visual-scene-play-singletask-task1 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.99 --agent.kl_weight=0.1 --agent.alpha=300 --agent.encoder=impala_small
+# InFOM on OGBench visual puzzle 4x4 task 1
+python main.py --env_name=visual-puzzle-4x4-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.95 --agent.kl_weight=0.1 --agent.alpha=300 --agent.encoder=impala_small
 ```
 
 </details>
 
+### Baselines
+
+<details>
+<summary><b>Click to expand the example commands for baselines</b></summary>
+
+```
+# IQL on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/iql.py --agent.alpha=1
+# IQL on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/iql.py --agent.alpha=1
+
+# ReBRAC on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/rebrac.py --agent.alpha_actor=0.1 --agent.alpha_critic=0.1
+# ReBRAC on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/rebrac.py --agent.alpha_actor=1 --agent.alpha_critic=1
+# ReBRAC on OGBench visual cube single task 1
+python main.py --env_name=visual-cube-single-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/rebrac.py --agent.alpha_actor=1 --agent.alpha_critic=0 --agent.encoder=impala_small
+
+# DINO + ReBRAC on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/dino_rebrac.py --agent.repr_temp=0.1
+# DINO + ReBRAC on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/dino_rebrac.py --agent.repr_temp=0.04
+# DINO + ReBRAC on OGBench visual cube single task 1
+python main.py --env_name=visual-cube-single-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/dino_rebrac.py --agent.repr_temp=0.1 --agent.encoder=impala_small
+
+# MBPO + ReBRAC on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/mbpo_rebrac.py --agent.num_model_rollouts=128 --agent.num_model_rollout_steps=1
+# MBPO + ReBRAC on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/mbpo_rebrac.py --agent.num_model_rollouts=256 --agent.num_model_rollout_steps=2
+
+# CRL + IS on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/crl_infonce.py --agent.alpha=0.03
+# CRL + IS on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/crl_infonce.py --agent.alpha=30
+# CRL + IS on OGBench visual cube single task 1
+python main.py --env_name=visual-cube-single-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/crl_infonce.py --agent.alpha=30 --agent.encoder=impala_small
+
+# TD InfoNCE + IS on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/td_infonce.py --agent.alpha=0.003
+# TD InfoNCE + IS on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/td_infonce.py --agent.alpha=30
+
+# FB + IQL on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/fb_repr.py --agent.alpha_repr=1 --agent.alpha_awr=1
+# FB + IQL on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/fb_repr.py --agent.alpha_repr=10 --agent.alpha_awr=1
+# FB + IQL on OGBench visual cube single task 1
+python main.py --env_name=visual-cube-single-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/fb_repr.py --agent.alpha_repr=10 --agent.alpha_awr=1 --agent.encoder=impala_small
+
+# HILP + IQL on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/hilp.py --agent.alpha=1
+# HILP + IQL on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/hilp.py --agent.alp```
+
+# IQL on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/iql.py --agent.alpha=1
+# IQL on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/iql.py --agent.alpha=1
+
+# ReBRAC on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/rebrac.py --agent.alpha_actor=0.1 --agent.alpha_critic=0.1
+# ReBRAC on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/rebrac.py --agent.alpha_actor=1 --agent.alpha_critic=1
+# ReBRAC on OGBench visual cube single task 1
+python main.py --env_name=visual-cube-single-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/rebrac.py --agent.alpha_actor=1 --agent.alpha_critic=0 --agent.encoder=impala_small
+
+# DINO + ReBRAC on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/dino_rebrac.py --agent.repr_temp=0.1
+# DINO + ReBRAC on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/dino_rebrac.py --agent.repr_temp=0.04
+# DINO + ReBRAC on OGBench visual cube single task 1
+python main.py --env_name=visual-cube-single-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/dino_rebrac.py --agent.repr_temp=0.1 --agent.encoder=impala_small
+
+# MBPO + ReBRAC on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/mbpo_rebrac.py --agent.num_model_rollouts=128 --agent.num_model_rollout_steps=1
+# MBPO + ReBRAC on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/mbpo_rebrac.py --agent.num_model_rollouts=256 --agent.num_model_rollout_steps=2
+
+# CRL + IS on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/crl_infonce.py --agent.alpha=0.03
+# CRL + IS on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/crl_infonce.py --agent.alpha=30
+# CRL + IS on OGBench visual cube single task 1
+python main.py --env_name=visual-cube-single-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/crl_infonce.py --agent.alpha=30 --agent.encoder=impala_small
+
+# TD InfoNCE + IS on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/td_infonce.py --agent.alpha=0.003
+# TD InfoNCE + IS on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/td_infonce.py --agent.alpha=30
+
+# FB + IQL on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/fb_repr.py --agent.alpha_repr=1 --agent.alpha_awr=1
+# FB + IQL on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/fb_repr.py --agent.alpha_repr=10 --agent.alpha_awr=1
+# FB + IQL on OGBench visual cube single task 1
+python main.py --env_name=visual-cube-single-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/fb_repr.py --agent.alpha_repr=10 --agent.alpha_awr=1 --agent.encoder=impala_small
+
+# HILP + IQL on ExORL cheetah {run, run backward, walk, walk backward}
+python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, cheetah_walk_backward} --agent=agents/hilp.py --agent.alpha=1
+# HILP + IQL on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/hilp.py --agent.alpha=1
+```
+
+</details>
 
 ## Acknowledgments
 
