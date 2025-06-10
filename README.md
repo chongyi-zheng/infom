@@ -6,6 +6,11 @@
       <h1 style="font-size:1.76rem">
         Intention-Conditioned Flow Occupancy Models
       </h1>
+      <br>
+      <h2>
+        <a href="" style="font-size:20px;">Paper</a>&emsp;
+        <a href="https://chongyi-zheng.github.io/infom" style="font-size:20px;">Website</a>
+      </h2>
     </summary>
   </ul>
 </div>
