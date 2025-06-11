@@ -8,7 +8,7 @@
       </h1>
       <br>
       <h2>
-        <a href="" style="font-size:20px;">Paper</a>&emsp;
+        <a href="https://arxiv.org/abs/2506.08902" style="font-size:20px;">Paper</a>&emsp;
         <a href="https://chongyi-zheng.github.io/infom" style="font-size:20px;">Website</a>
       </h2>
     </summary>
