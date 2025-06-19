@@ -166,11 +166,6 @@ class Dataset(FrozenDict):
                 next_obs.append(jax.tree_util.tree_map(lambda arr: arr[cur_idxs], self['observations']))
         next_obs.append(jax.tree_util.tree_map(lambda arr: arr[idxs], self['next_observations']))
 
-        # obs = jax.tree_util.tree_map(lambda *args: np.concatenate(args, axis=-1), *obs)
-        # next_obs = jax.tree_util.tree_map(lambda *args: np.concatenate(args, axis=-1), *next_obs)
-        # overwrite unstacked frame version of self._dict
-        # obs.setflags(write=False)
-        # next_obs.setflags(write=False)
         self._dict['observations'] = jax.tree_util.tree_map(
             lambda *args: np.concatenate(args, axis=-1), *obs)
         self._dict['next_observations'] = jax.tree_util.tree_map(
@@ -347,19 +342,6 @@ class GCDataset:
         self.initial_locs = np.concatenate([[0], self.terminal_locs[:-1] + 1])
         assert self.terminal_locs[-1] == self.size - 1
 
-        # Get max_episode_steps in the dataset
-        # initial_state_idxs = self.initial_locs[np.searchsorted(self.initial_locs, np.arange(self.size), side='right') - 1]
-        # final_state_idxs = self.terminal_locs[np.searchsorted(self.terminal_locs, np.arange(self.size))]
-        # self.max_episode_steps = int(np.max(final_state_idxs - initial_state_idxs + 1))
-
-        # Geometric distribution for future goal sampling
-        # arange = np.arange(self.max_episode_steps)
-        # is_future_mask = (arange[:, None] < arange[None]).astype(float)
-        # discount = self.config['discount'] ** (arange[None] - arange[:, None] - 1).astype(float)
-        #
-        # geometric_probs = is_future_mask * discount
-        # self.geometric_probs = geometric_probs / geometric_probs.sum(axis=1, keepdims=True)
-
         # Assert probabilities sum to 1.
         assert np.isclose(
             self.config['value_p_curgoal'] + self.config['value_p_trajgoal'] + self.config['value_p_randomgoal'], 1.0
@@ -383,9 +365,6 @@ class GCDataset:
             idxs = self.dataset.get_random_idxs(batch_size)
 
         batch = self.dataset.sample(batch_size, idxs)
-        # if self.config['frame_stack'] is not None:
-        #     batch['observations'] = self.get_observations(idxs)
-        #     batch['next_observations'] = self.get_observations(idxs + 1)
 
         value_goal_idxs = self.sample_goals(
             idxs,
@@ -414,23 +393,6 @@ class GCDataset:
             batch['masks'] = batch['relabeled_masks']
             batch['rewards'] = batch['relabeled_rewards']
 
-        # final_state_idxs = self.terminal_locs[np.searchsorted(self.terminal_locs, idxs)]
-        # final_state_dists = final_state_idxs - idxs
-        # value_temporal_dists = value_goal_idxs - idxs
-        # value_temporal_dists = np.where(
-        #     (0 <= value_temporal_dists) & (value_temporal_dists <= final_state_dists),
-        #     value_temporal_dists, np.inf
-        # )
-        # actor_temporal_dists = actor_goal_idxs - idxs
-        # actor_temporal_dists = np.where(
-        #     (0 <= actor_temporal_dists) & (actor_temporal_dists <= final_state_dists),
-        #     actor_temporal_dists, np.inf
-        # )
-        # batch['value_goal_discounted_returns'] = -(
-        #     1 - self.config['discount'] ** value_temporal_dists) / (1 - self.config['discount'])
-        # batch['actor_goal_discounted_returns'] = -(
-        #     1 - self.config['discount'] ** actor_temporal_dists) / (1 - self.config['discount'])
-
         if self.config['p_aug'] is not None:
             # Apply random-crop image augmentation.
             if np.random.rand() < self.config['p_aug']:
@@ -445,12 +407,9 @@ class GCDataset:
         # Random goals.
         random_goal_idxs = self.dataset.get_random_idxs(batch_size)
 
-        # Goals from the same trajectory (excluding the current state, unless it is the final state).
-        # initial_state_idxs = self.initial_locs[np.searchsorted(self.initial_locs, idxs, side='right') - 1]
+        # Goals from the same trajectory.
         final_state_idxs = self.terminal_locs[np.searchsorted(self.terminal_locs, idxs)]
         if geom_sample:
-            # Geometric sampling.
-
             # truncated geometric sampling.
             support_shift = geom_start - 1
             offsets = np.random.geometric(p=1 - self.config['discount'], size=batch_size) + support_shift  # in [0, inf) or [1, inf)
