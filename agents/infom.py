@@ -123,7 +123,7 @@ class InFOMAgent(flax.struct.PyTreeNode):
 
         means = latent_dist.mean()
         log_stds = jnp.log(latent_dist.stddev())
-        kl_loss = -0.5 * (1 + log_stds - means ** 2 - jnp.exp(log_stds)).mean()
+        kl_loss = -0.5 * (1 + 2 * log_stds - means ** 2 - jnp.exp(2 * log_stds)).mean()
 
         # SARSA^2 flow matching for occupancy models
         rng, time_rng, current_noise_rng, future_noise_rng = jax.random.split(rng, 4)
