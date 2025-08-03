@@ -506,7 +506,7 @@ def get_config():
             value_hidden_dims=(512, 512, 512, 512),  # Value network hidden dimensions.
             reward_hidden_dims=(512, 512, 512, 512),  # Reward network hidden dimensions.
             intention_encoder_layer_norm=True,  # Whether to use layer normalization for the intention encoder.
-            value_layer_norm=True,  # Whether to use layer normalization for the critic.
+            value_layer_norm=False,  # Whether to use layer normalization for the critic.
             actor_layer_norm=False,  # Whether to use layer normalization for the actor.
             reward_layer_norm=True,  # Whether to use layer normalization for the reward.
             latent_dim=512,  # Latent dimension for intention latents.
