@@ -15,7 +15,7 @@ from utils.networks import GCActor, GCValue, Value
 
 class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
     """Forward Backward Representation + Implicit Q-Learning (FB + IQL) agent.
-    
+
     Reference: https://github.com/enjeeneer/zero-shot-rl/blob/main/agents/fb/agent.py.
 
     """
@@ -134,10 +134,12 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
             lambda x: (x * (1 - I)) ** 2,
             0, 0
         )(occ_measures - self.config['discount'] * target_occ_measures[None])
-        repr_diag_loss = jax.vmap(jnp.diag, 0, 0)(occ_measures)
+        repr_off_diag_loss = 0.5 * jnp.sum(repr_off_diag_loss, axis=-1) / (self.config['batch_size'] - 1)
+
+        repr_diag_loss = -jax.vmap(jnp.diag, 0, 0)(occ_measures)
 
         repr_loss = jnp.mean(
-            repr_diag_loss + jnp.sum(repr_off_diag_loss, axis=-1) / (self.config['batch_size'] - 1)
+            repr_diag_loss + repr_off_diag_loss
         )
 
         # orthonormalization loss
@@ -152,11 +154,11 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
 
         return fb_loss, {
             'repr_loss': repr_loss,
-            'repr_diag_loss': jnp.mean(jnp.sum(repr_diag_loss, axis=-1) / (self.config['batch_size'] - 1)),
-            'repr_off_diag_loss': jnp.mean(repr_off_diag_loss),
+            'repr_diag_loss': jnp.mean(repr_diag_loss),
+            'repr_off_diag_loss': jnp.mean(jnp.sum(repr_off_diag_loss, axis=-1) / (self.config['batch_size'] - 1)),
             'ortho_loss': ortho_loss,
-            'ortho_diag_loss': jnp.sum(ortho_diag_loss, axis=-1) / (self.config['batch_size'] - 1),
-            'ortho_off_diag_loss': jnp.mean(ortho_off_diag_loss),
+            'ortho_diag_loss': jnp.mean(ortho_diag_loss),
+            'ortho_off_diag_loss': jnp.mean(jnp.sum(ortho_off_diag_loss, axis=-1) / (self.config['batch_size'] - 1)),
             'occ_measure_mean': occ_measures.mean(),
             'occ_measure_max': occ_measures.max(),
             'occ_measure_min': occ_measures.min(),
