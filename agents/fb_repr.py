@@ -179,7 +179,7 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
             q_actions = jnp.clip(dist.sample(seed=rng), -1, 1)
         forward_reprs = self.network.select('forward_repr')(
             observations, latents, q_actions, goal_encoded=True, params=grad_params)
-        q1, q2 = jnp.einsum('esd,td->est', forward_reprs, latents)
+        q1, q2 = jnp.einsum('esd,sd->es', forward_reprs, latents)
         q = jnp.minimum(q1, q2)
 
         # Normalize Q values by the absolute mean to make the loss scale invariant.
