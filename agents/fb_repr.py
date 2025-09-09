@@ -445,7 +445,7 @@ def get_config():
             tau=0.005,  # Target network update rate.
             expectile=0.9,  # IQL style expectile.
             actor_freq=4,  # Actor update frequency.
-            repr_agg='min',  # Aggregation method for target forward backward representation.
+            repr_agg='mean',  # Aggregation method for target forward backward representation.
             orthonorm_coeff=1.0,  # orthonormalization coefficient
             latent_mix_prob=0.5,  # Probability to replace latents sampled from gaussian with backward representations.
             alpha_repr=10.0,  # Temperature in BC coefficient in DDPG+BC.
