@@ -1,0 +1,13 @@
+{"time":"2025-09-10T15:42:33.443489635+03:00","level":"INFO","msg":"stream: starting","core version":"0.21.3"}
+{"time":"2025-09-10T15:42:34.19312788+03:00","level":"INFO","msg":"stream: created new stream","id":"gjj23shf"}
+{"time":"2025-09-10T15:42:34.193198044+03:00","level":"INFO","msg":"stream: started","id":"gjj23shf"}
+{"time":"2025-09-10T15:42:34.19326039+03:00","level":"INFO","msg":"sender: started","stream_id":"gjj23shf"}
+{"time":"2025-09-10T15:42:34.193251368+03:00","level":"INFO","msg":"writer: started","stream_id":"gjj23shf"}
+{"time":"2025-09-10T15:42:34.193264462+03:00","level":"INFO","msg":"handler: started","stream_id":"gjj23shf"}
+{"time":"2025-09-10T15:42:34.589573791+03:00","level":"ERROR","msg":"git repo not found","error":"repository does not exist"}
+{"time":"2025-09-10T15:47:05.476667238+03:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/simmax21/infom/gjj23shf/file_stream\": context deadline exceeded"}
+{"time":"2025-09-10T15:49:25.235578591+03:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/simmax21/infom/gjj23shf/file_stream\": proxyconnect tcp: dial tcp 185.100.156.236:8000: connect: connection refused"}
+{"time":"2025-09-10T15:49:27.706644776+03:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/simmax21/infom/gjj23shf/file_stream\": proxyconnect tcp: dial tcp 185.100.156.236:8000: connect: connection refused"}
+{"time":"2025-09-10T15:49:32.701934474+03:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/simmax21/infom/gjj23shf/file_stream\": proxyconnect tcp: dial tcp 185.100.156.236:8000: connect: connection refused"}
+{"time":"2025-09-10T15:49:34.856465166+03:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": read tcp 10.16.87.6:50210->185.100.156.236:8000: read: connection reset by peer"}
+{"time":"2025-09-10T15:49:37.041580536+03:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": proxyconnect tcp: dial tcp 185.100.156.236:8000: connect: connection refused"}

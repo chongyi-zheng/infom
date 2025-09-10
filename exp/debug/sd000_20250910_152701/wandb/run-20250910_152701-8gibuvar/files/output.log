@@ -1,0 +1,19 @@
+I0910 15:27:03.603071 127960839222784 __init__.py:88] MUJOCO_GL=egl, attempting to import specified OpenGL backend.
+I0910 15:27:03.612320 127960839222784 acceleratesupport.py:24] No OpenGL_accelerate module loaded: No module named 'OpenGL_accelerate'
+I0910 15:27:03.740895 127960839222784 __init__.py:31] MuJoCo library version is: 3.3.5
+load datafile: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:00<00:00, 17.69it/s]
+load datafile: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:00<00:00, 828.26it/s]
+load datafile: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 6/6 [00:00<00:00, 184.27it/s]
+load datafile: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 6/6 [00:00<00:00, 1561.64it/s]
+ 27%|███████████████████████████                                                                         | 406169/1500000 [34:14<1:32:12, 197.72it/s]                 
+Traceback (most recent call last):
+  File "/home/m_bobrin/infom/main.py", line 277, in <module>
+    app.run(main)
+  File "/home/m_bobrin/miniconda3/envs/infom1/lib/python3.10/site-packages/absl/app.py", line 316, in run
+    _run_main(main, args)
+  File "/home/m_bobrin/miniconda3/envs/infom1/lib/python3.10/site-packages/absl/app.py", line 261, in _run_main
+    sys.exit(main(argv))
+  File "/home/m_bobrin/infom/main.py", line 146, in main
+    agent, update_info = agent.pretrain(batch)
+  File "<string>", line 1, in <lambda>
+KeyboardInterrupt

@@ -1,0 +1,8 @@
+{"time":"2025-09-10T16:01:35.214324826+03:00","level":"INFO","msg":"stream: starting","core version":"0.21.3"}
+{"time":"2025-09-10T16:01:35.917313573+03:00","level":"INFO","msg":"stream: created new stream","id":"99degu6x"}
+{"time":"2025-09-10T16:01:35.917377116+03:00","level":"INFO","msg":"stream: started","id":"99degu6x"}
+{"time":"2025-09-10T16:01:35.917394383+03:00","level":"INFO","msg":"writer: started","stream_id":"99degu6x"}
+{"time":"2025-09-10T16:01:35.917417483+03:00","level":"INFO","msg":"handler: started","stream_id":"99degu6x"}
+{"time":"2025-09-10T16:01:35.917448114+03:00","level":"INFO","msg":"sender: started","stream_id":"99degu6x"}
+{"time":"2025-09-10T16:01:36.34582818+03:00","level":"ERROR","msg":"git repo not found","error":"repository does not exist"}
+{"time":"2025-09-10T16:08:04.795798201+03:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/simmax21/infom/99degu6x/file_stream\": unexpected EOF"}
