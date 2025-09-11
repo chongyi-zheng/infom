@@ -97,7 +97,6 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
 
         next_dist = self.network.select('actor')(
             next_observations, latents, goal_encoded=True, temperature=1.0)
-        # next_actions = jnp.clip(next_dist.sample(seed=rng), -1, 1)
         next_actions = jnp.clip(next_dist.mode(), -1, 1)
         next_forward_reprs = self.network.select('target_forward_repr')(
             next_observations, latents, next_actions, goal_encoded=True)
@@ -159,7 +158,6 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
 
         dist = self.network.select('actor')(
             observations, latents, goal_encoded=True, params=grad_params, temperature=1.0)
-        # q_actions = jnp.clip(dist.sample(seed=rng), -1, 1)
         q_actions = jnp.clip(dist.mode(), -1, 1)
         forward_reprs = self.network.select('forward_repr')(
             observations, latents, q_actions, goal_encoded=True)
@@ -171,20 +169,13 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
             lam = jax.lax.stop_gradient(1 / jnp.abs(q).mean())
             q_loss = lam * q_loss
             
-        # log_prob = dist.log_prob(actions)
-
-        # bc_loss = -(self.config['actor_repr']['alpha_repr'] * log_prob).mean()
-
-        actor_loss = q_loss# + bc_loss
+        actor_loss = q_loss
 
         return actor_loss, {
             'actor_loss': actor_loss,
             'q_loss': q_loss,
-            # 'bc_loss': bc_loss,
-            # 'log_prob': log_prob.mean(),
             'q_mean': q.mean(),
             'q_abs_mean': jnp.abs(q).mean(),
-            # 'bc_log_prob': log_prob.mean(),
             'mse': jnp.mean((dist.mode() - actions) ** 2),
             'std': jnp.mean(dist.scale_diag),
         }
