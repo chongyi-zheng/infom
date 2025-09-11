@@ -31,7 +31,7 @@ flags.DEFINE_string('restore_path', None, 'Restore path.')
 flags.DEFINE_integer('restore_epoch', None, 'Restore epoch.')
 
 flags.DEFINE_integer('pretraining_steps', 1_000_000, 'Number of offline steps.')
-flags.DEFINE_integer('pretraining_size', 1_000_000, 'Size of the dataset for pre-training.')
+flags.DEFINE_integer('pretraining_size', 5_000_000, 'Size of the dataset for pre-training.')
 flags.DEFINE_integer('finetuning_steps', 500_000, 'Number of online steps.')
 flags.DEFINE_integer('finetuning_size', 500_000, 'Size of the dataset for fine-tuning.')
 flags.DEFINE_integer('log_interval', 5_000, 'Logging interval.')
