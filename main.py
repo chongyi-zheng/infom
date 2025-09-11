@@ -30,12 +30,12 @@ flags.DEFINE_string('save_dir', 'exp/', 'Save directory.')
 flags.DEFINE_string('restore_path', None, 'Restore path.')
 flags.DEFINE_integer('restore_epoch', None, 'Restore epoch.')
 
-flags.DEFINE_integer('pretraining_steps', 1_000_000, 'Number of offline steps.')
-flags.DEFINE_integer('pretraining_size', 1_000_000, 'Size of the dataset for pre-training.')
-flags.DEFINE_integer('finetuning_steps', 500_000, 'Number of online steps.')
-flags.DEFINE_integer('finetuning_size', 500_000, 'Size of the dataset for fine-tuning.')
+flags.DEFINE_integer('pretraining_steps', 500_000, 'Number of offline steps.')
+flags.DEFINE_integer('pretraining_size', 5_000_000, 'Size of the dataset for pre-training.')
+flags.DEFINE_integer('finetuning_steps', 1_000_000, 'Number of online steps.')
+flags.DEFINE_integer('finetuning_size', 5_000_000, 'Size of the dataset for fine-tuning.')
 flags.DEFINE_integer('log_interval', 5_000, 'Logging interval.')
-flags.DEFINE_integer('eval_interval', 50_000, 'Evaluation interval.')
+flags.DEFINE_integer('eval_interval', 100_000, 'Evaluation interval.')
 flags.DEFINE_integer('save_interval', 1_500_000, 'Saving interval.')
 
 flags.DEFINE_integer('eval_episodes', 50, 'Number of evaluation episodes.')
@@ -144,26 +144,26 @@ def main(_):
             eval_logger = pretraining_eval_logger
 
             agent, update_info = agent.pretrain(batch)
-        else:
-            if i == (FLAGS.pretraining_steps + 1):
-                if config['agent_name'] in ['infom', 'dino_rebrac', 'td_infonce', 'hilp']:
-                    agent.target_reset()
+        # else:
+        if i % FLAGS.eval_interval == 0:
+            if config['agent_name'] in ['infom', 'dino_rebrac', 'td_infonce', 'hilp']:
+                agent.target_reset()
 
-                # Infer the latent vector.
-                if config['agent_name'] in ['hilp', 'fb_repr']:
-                    num_samples = 0
-                    inference_batch = defaultdict(list)
-                    while num_samples < config['num_latent_inference_samples']:
-                        batch = finetuning_train_dataset.sample(config['batch_size'])
-                        for k, v in batch.items():
-                            inference_batch[k].append(v)
-                        num_samples += config['batch_size']
-                    for k, v in inference_batch.items():
-                        if k not in ['observation_min', 'observation_max']:
-                            inference_batch[k] = np.concatenate(v, axis=0)[:config['num_latent_inference_samples']]
+            # Infer the latent vector.
+            if config['agent_name'] in ['hilp', 'fb_repr']:
+                num_samples = 0
+                inference_batch = defaultdict(list)
+                while num_samples < config['num_latent_inference_samples']:
+                    batch = finetuning_train_dataset.sample(config['batch_size'])
+                    for k, v in batch.items():
+                        inference_batch[k].append(v)
+                    num_samples += config['batch_size']
+                for k, v in inference_batch.items():
+                    if k not in ['observation_min', 'observation_max']:
+                        inference_batch[k] = np.concatenate(v, axis=0)[:config['num_latent_inference_samples']]
 
-                    inferred_latent = agent.infer_latent(inference_batch)
-                    inferred_latent = np.array(inferred_latent)
+                inferred_latent = agent.infer_latent(inference_batch)
+                inferred_latent = np.array(inferred_latent)
 
             # Offline fine-tuning.
             if (config['agent_name'] == 'mbpo_rebrac') and (finetuning_replay_buffer.size > config['batch_size']):
@@ -181,7 +181,7 @@ def main(_):
             if config['agent_name'] in ['hilp', 'fb_repr']:
                 batch['latents'] = np.tile(inferred_latent, (batch['observations'].shape[0], 1))
 
-            agent, update_info = agent.finetune(batch, full_update=(i % config['actor_freq'] == 0))
+            # agent, update_info = agent.finetune(batch, full_update=(i % config['actor_freq'] == 0))
 
         # MBPO imaginary rollouts
         if config['agent_name'] in ['mbpo_rebrac'] and (i > FLAGS.pretraining_steps):
@@ -235,8 +235,9 @@ def main(_):
             train_logger.log(train_metrics, step=i)
 
         # Evaluate agent.
-        if (FLAGS.eval_interval != 0 and (i > FLAGS.pretraining_steps)
-            and (i == (FLAGS.pretraining_steps + 1) or i % FLAGS.eval_interval == 0)):
+        # if (FLAGS.eval_interval != 0 and (i > FLAGS.pretraining_steps)
+        #     and (i == (FLAGS.pretraining_steps + 1) or i % FLAGS.eval_interval == 0)):
+        if (i % FLAGS.eval_interval == 0):
             renders = []
             eval_metrics = {}
             eval_info, trajs, cur_renders = evaluate(

@@ -3,7 +3,7 @@ from typing import Any, Optional, Sequence
 import distrax
 import flax.linen as nn
 import jax.numpy as jnp
-
+from functools import partial
 
 def default_init(scale=1.0):
     """Default kernel initializer."""
@@ -456,6 +456,91 @@ class GCValue(nn.Module):
             v = self.value_net(inputs)
 
         return v
+
+class FBBackwardCore(nn.Module):
+    hidden_dims: Sequence[int]
+    value_dim: int
+    activation: Any = nn.relu
+    layer_norm: bool = False
+
+    @nn.compact
+    def __call__(self, x):
+        for i, features in enumerate(self.hidden_dims):
+            x = nn.Dense(features, use_bias=True, kernel_init=default_init())(x)
+            if self.layer_norm and i == 0:
+                x = nn.LayerNorm()(x)
+            x = nn.tanh(x) if i == 0 else self.activation(x)
+        x = nn.Dense(self.value_dim, use_bias=True, kernel_init=default_init())(x)
+        return x
+    
+class FBForwardCore(nn.Module):
+    hidden_dims: Sequence[int]
+    value_dim: int
+    activation: Any = nn.relu
+    layer_norm: bool = False
+
+    @nn.compact
+    def __call__(self, x):
+        for i, features in enumerate(self.hidden_dims):
+            x = nn.Dense(features, use_bias=True, kernel_init=default_init())(x)
+            if self.layer_norm and i == 0:
+                x = nn.LayerNorm()(x)
+            x = nn.tanh(x) if i == 0 else self.activation(x)
+        x = nn.Dense(self.value_dim, use_bias=True, kernel_init=default_init())(x)
+        return x
+
+class FBBackwardMLP(nn.Module):
+    hidden_dims: Sequence[int]
+    value_dim: int
+    layer_norm: bool = False
+    num_ensembles: int = 2
+    gc_encoder: Optional[nn.Module] = None
+    per_ensemble_input: bool = False
+
+    def setup(self):
+        Base = partial(FBBackwardCore,
+            hidden_dims=self.hidden_dims,
+            value_dim=self.value_dim,
+            layer_norm=self.layer_norm,
+        )
+
+        if self.num_ensembles > 1:
+            VmapCore = ensemblize(Base, self.num_ensembles)
+            self.net = VmapCore()
+        else:
+            self.net = Base()
+
+    def __call__(self, obs):
+        if self.gc_encoder is not None:
+            obs = self.gc_encoder(obs)
+
+        return self.net(obs)
+    
+class FBForwardMLP(nn.Module):
+    hidden_dims: Sequence[int]
+    value_dim: int
+    layer_norm: bool = True
+    num_ensembles: int = 2
+    gc_encoder: Optional[nn.Module] = None
+    per_ensemble_input: bool = False
+
+    def setup(self):
+        Base = partial(FBForwardCore,
+            hidden_dims=self.hidden_dims,
+            value_dim=self.value_dim,
+            layer_norm=self.layer_norm,
+        )
+        if self.num_ensembles > 1:
+            VmapCore = ensemblize(Base, self.num_ensembles)
+            self.net = VmapCore()
+        else:
+            self.net = Base()
+
+    def __call__(self, obs, latents, actions, goal_encoded=False):
+        if self.gc_encoder is not None:
+            obs = self.gc_encoder(obs)
+        x = jnp.concatenate([obs, latents, actions], -1)
+        return self.net(x)
 
 
 class GCBilinearValue(nn.Module):
