@@ -111,9 +111,9 @@ class TDInfoNCEAgent(flax.struct.PyTreeNode):
             w_psi = w_psi[None, ...]
         w_logits = jnp.einsum('eik,ejk->ije', w_phi, w_psi) / jnp.sqrt(w_phi.shape[-1])
         if self.config['logit_agg'] == 'mean':
-            w_logits = jnp.mean(w_logits, axis=0)
+            w_logits = jnp.mean(w_logits, axis=-1)
         else:
-            w_logits = jnp.min(w_logits, axis=0)
+            w_logits = jnp.min(w_logits, axis=-1)
         w = jax.nn.softmax(w_logits, axis=-1)
         w = jax.lax.stop_gradient(w)
 
