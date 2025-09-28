@@ -514,7 +514,7 @@ def get_config():
             tau=0.005,  # Target network update rate.
             expectile=0.9,  # IQL style expectile.
             kl_weight=0.01,  # Weight for the KL divergence loss.
-            q_agg='min',  # Aggregation method for target Q values.
+            q_agg='min',  # Aggregation method for Q values.
             critic_latent_type='prior',  # Type of critic latents. ('prior', 'encoding')
             num_flow_goals=16,  # Number of future flow goals for computing the target q.
             clip_flow_goals=True,  # Whether to clip the flow goals.

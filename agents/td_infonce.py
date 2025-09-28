@@ -110,7 +110,10 @@ class TDInfoNCEAgent(flax.struct.PyTreeNode):
             w_phi = w_phi[None, ...]
             w_psi = w_psi[None, ...]
         w_logits = jnp.einsum('eik,ejk->ije', w_phi, w_psi) / jnp.sqrt(w_phi.shape[-1])
-        w_logits = jnp.min(w_logits, axis=-1)
+        if self.config['logit_agg'] == 'mean':
+            w_logits = jnp.mean(w_logits, axis=-1)
+        else:
+            w_logits = jnp.min(w_logits, axis=-1)
         w = jax.nn.softmax(w_logits, axis=-1)
         w = jax.lax.stop_gradient(w)
 
@@ -169,7 +172,10 @@ class TDInfoNCEAgent(flax.struct.PyTreeNode):
         else:
             q_actions = jnp.clip(dist.sample(seed=rng), -1, 1)
         logits1, logits2 = self.network.select('critic')(batch['observations'], batch['actor_goals'], q_actions)
-        logits = jnp.minimum(logits1, logits2)
+        if self.config['logit_agg'] == 'mean':
+            logits = (logits1 + logits2) / 2
+        else:
+            logits = jnp.minimum(logits1, logits2)
         log_ratios = jnp.diag(logits) - jax.nn.logsumexp(logits, axis=-1) + jnp.log(logits.shape[-1])
 
         reward_preds = self.network.select('reward')(batch['actor_goals'])
@@ -389,6 +395,7 @@ def get_config():
             discount=0.99,  # Discount factor.
             actor_freq=4,  # Actor update frequency.
             tau=0.005,  # Target network update rate.
+            logit_agg='mean',  # Aggregation method for logit values.
             normalize_q_loss=True,  # Whether to normalize the Q loss.
             alpha=0.1,  # Temperature in AWR or BC coefficient in DDPG+BC.
             const_std=True,  # Whether to use constant standard deviation for the actor.
