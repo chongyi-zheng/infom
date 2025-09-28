@@ -89,7 +89,7 @@ class TDInfoNCEAgent(flax.struct.PyTreeNode):
 
         # random goal logits
         if td_loss_type == 'q_learning':
-            next_dist = self.network.select('actor')(batch['next_observations'], params=grad_params)
+            next_dist = self.network.select('actor')(batch['next_observations'])
             if self.config['const_std']:
                 next_actions = jnp.clip(next_dist.mode(), -1, 1)
             else:
