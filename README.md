@@ -42,7 +42,7 @@ This repository contains code for running the InFOM algorithm and eight baseline
     export PYOPENGL_PLATFORM=egl
     ```
 
-## Generate datasets
+## Generating datasets
 
 We provide scripts to generate datasets for pre-training and fine-tuning in the `data_gen_scripts` folder.
 
