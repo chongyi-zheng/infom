@@ -178,7 +178,7 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
         else:
             q_actions = jnp.clip(dist.sample(seed=rng), -1, 1)
         forward_reprs = self.network.select('forward_repr')(
-            observations, latents, q_actions, goal_encoded=True, params=grad_params)
+            observations, latents, q_actions, goal_encoded=True)
         q1, q2 = jnp.einsum('esd,sd->es', forward_reprs, latents)
         q = jnp.minimum(q1, q2)
 
