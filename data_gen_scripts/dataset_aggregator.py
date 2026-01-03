@@ -119,12 +119,6 @@ class OfflineDatasetAggregator:
         return dataset
 
 
-def _worker_init_fn(worker_id):
-    seed = np.random.get_state()[1][0] + worker_id
-    np.random.seed(seed)
-    random.seed(seed)
-
-
 def make_dataset(task, dataset_dir, skip_size, max_size, num_workers, relabel_reward):
     aggregator = OfflineDatasetAggregator(task, dataset_dir, skip_size, max_size, num_workers, relabel_reward)
     if relabel_reward:
