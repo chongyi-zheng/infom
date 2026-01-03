@@ -128,9 +128,9 @@ def _worker_init_fn(worker_id):
 def make_dataset(task, dataset_dir, skip_size, max_size, num_workers, relabel_reward):
     aggregator = OfflineDatasetAggregator(task, dataset_dir, skip_size, max_size, num_workers, relabel_reward)
     if relabel_reward:
-        print('Loading data...')
-    else:
         print('Loading and labeling data...')
+    else:
+        print('Loading data...')
     dataset = aggregator.load()
     print('Dataset loaded.')
 
