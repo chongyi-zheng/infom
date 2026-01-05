@@ -10,14 +10,11 @@ import optax
 
 from utils.encoders import GCEncoder, encoder_modules
 from utils.flax_utils import ModuleDict, TrainState, nonpytree_field
-from utils.networks import GCActor, GCValue, Value
+from utils.networks import GCActor, GCValue, FBForwardMLP, FBBackwardMLP
 
 
 class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
     """Forward Backward Representation + Implicit Q-Learning (FB + IQL) agent.
-
-    Reference: https://github.com/enjeeneer/zero-shot-rl/blob/main/agents/fb/agent.py.
-
     """
 
     rng: Any
@@ -92,22 +89,15 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
         }
 
         return actor_loss, actor_info
-
     def forward_backward_repr_loss(self, batch, grad_params, rng):
-        """Compute the forward backward representation loss."""
-
         observations = batch['observations']
         actions = batch['actions']
         next_observations = batch['next_observations']
         latents = batch['latents']
 
         next_dist = self.network.select('actor')(
-            next_observations, latents, goal_encoded=True)
-        if self.config['const_std']:
-            next_actions = jnp.clip(next_dist.mode(), -1, 1)
-        else:
-            next_actions = jnp.clip(next_dist.sample(seed=rng), -1, 1)
-
+            next_observations, latents, goal_encoded=True, temperature=1.0)
+        next_actions = jnp.clip(next_dist.mode(), -1, 1)
         next_forward_reprs = self.network.select('target_forward_repr')(
             next_observations, latents, next_actions, goal_encoded=True)
         next_backward_reprs = self.network.select('target_backward_repr')(
@@ -128,82 +118,68 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
             backward_reprs, axis=-1, keepdims=True) * jnp.sqrt(self.config['latent_dim'])
         occ_measures = jnp.einsum('esd,td->est', forward_reprs, backward_reprs)
 
-        I = jnp.eye(self.config['batch_size'])
+        err = occ_measures - self.config['discount'] * target_occ_measures[None]
+        B = err.shape[-1]
+        I = jnp.eye(B)
+        mask = 1 - I
+        off_count = B * (B - 1)
 
-        repr_off_diag_loss = jax.vmap(
-            lambda x: (x * (1 - I)) ** 2,
-            0, 0
-        )(occ_measures - self.config['discount'] * target_occ_measures[None])
-        repr_off_diag_loss = 0.5 * jnp.sum(repr_off_diag_loss, axis=-1) / (self.config['batch_size'] - 1)
-
-        repr_diag_loss = -jax.vmap(jnp.diag, 0, 0)(occ_measures)
-
-        repr_loss = jnp.mean(
-            repr_diag_loss + repr_off_diag_loss
+        repr_off_diag_loss = 0.5 * jnp.sum(
+            jax.vmap(lambda x: jnp.sum((x * (1 - I)) ** 2) / off_count, in_axes=0)(err)
         )
-
+        repr_diag_loss = -jnp.sum(jax.vmap(lambda x: jnp.mean(jnp.diag(x)), in_axes=0)(occ_measures))
+        repr_loss = repr_off_diag_loss + repr_diag_loss
+        
         # orthonormalization loss
         covariance = jnp.matmul(backward_reprs, backward_reprs.T)
-        ortho_diag_loss = -2 * jnp.diag(covariance)
-        ortho_off_diag_loss = (covariance * (1 - I)) ** 2
-        ortho_loss = self.config['orthonorm_coeff'] * jnp.mean(
-            ortho_diag_loss + jnp.sum(ortho_off_diag_loss, axis=-1) / (self.config['batch_size'] - 1)
-        )
-
-        fb_loss = repr_loss + ortho_loss
+        ortho_diag_loss = -2 * jnp.diag(covariance).mean()
+        ortho_off_diag_loss = ((covariance * mask) ** 2).sum() / off_count 
+        ortho_loss = ortho_diag_loss + ortho_off_diag_loss
+        fb_loss = repr_loss + self.config['orthonorm_coeff'] * ortho_loss
 
         return fb_loss, {
-            'repr_loss': repr_loss,
-            'repr_diag_loss': jnp.mean(repr_diag_loss),
-            'repr_off_diag_loss': jnp.mean(jnp.sum(repr_off_diag_loss, axis=-1) / (self.config['batch_size'] - 1)),
-            'ortho_loss': ortho_loss,
-            'ortho_diag_loss': jnp.mean(ortho_diag_loss),
-            'ortho_off_diag_loss': jnp.mean(jnp.sum(ortho_off_diag_loss, axis=-1) / (self.config['batch_size'] - 1)),
-            'occ_measure_mean': occ_measures.mean(),
-            'occ_measure_max': occ_measures.max(),
-            'occ_measure_min': occ_measures.min(),
+            'target_M': target_occ_measures.mean(),
+            'M1': occ_measures[0].mean(),
+            'F1': forward_reprs[0].mean(),
+            'B': backward_reprs.mean(),
+            'B_norm': jnp.linalg.norm(backward_reprs, axis=-1).mean(),
+            'fb_loss': fb_loss,
+            'fb_diag': repr_diag_loss,
+            'fb_offdiag': repr_off_diag_loss,
+            'orth_loss': ortho_loss,
+            'orth_loss_diag': ortho_diag_loss,
+            'orth_loss_offdiag': ortho_off_diag_loss
         }
 
     def forward_backward_actor_loss(self, batch, grad_params, rng=None):
-        """Compute the forward backward actor loss (DDPG+BC)."""
-
         observations = batch['observations']
         actions = batch['actions']
         latents = batch['latents']
 
         dist = self.network.select('actor')(
-            observations, latents, goal_encoded=True, params=grad_params)
-        if self.config['const_std']:
-            q_actions = jnp.clip(dist.mode(), -1, 1)
-        else:
-            q_actions = jnp.clip(dist.sample(seed=rng), -1, 1)
+            observations, latents, goal_encoded=True, params=grad_params, temperature=1.0)
+        q_actions = jnp.clip(dist.mode(), -1, 1)
         forward_reprs = self.network.select('forward_repr')(
             observations, latents, q_actions, goal_encoded=True)
         q1, q2 = jnp.einsum('esd,sd->es', forward_reprs, latents)
         q = jnp.minimum(q1, q2)
-
-        # Normalize Q values by the absolute mean to make the loss scale invariant.
         q_loss = -q.mean()
+        
         if self.config['normalize_q_loss']:
             lam = jax.lax.stop_gradient(1 / jnp.abs(q).mean())
             q_loss = lam * q_loss
-        log_prob = dist.log_prob(actions)
-
-        bc_loss = -(self.config['alpha_repr'] * log_prob).mean()
-
-        actor_loss = q_loss + bc_loss
+            
+        actor_loss = q_loss
 
         return actor_loss, {
             'actor_loss': actor_loss,
             'q_loss': q_loss,
-            'bc_loss': bc_loss,
             'q_mean': q.mean(),
             'q_abs_mean': jnp.abs(q).mean(),
-            'bc_log_prob': log_prob.mean(),
             'mse': jnp.mean((dist.mode() - actions) ** 2),
             'std': jnp.mean(dist.scale_diag),
         }
-
+    
     @jax.jit
     def pretraining_loss(self, batch, grad_params, rng=None):
         info = {}
@@ -251,7 +227,7 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
 
     def target_update(self, network, module_name):
         """Update the target network."""
-        new_target_params = jax.tree_util.tree_map(
+        new_target_params = jax.tree.map(
             lambda p, tp: p * self.config['tau'] + tp * (1 - self.config['tau']),
             self.network.params[f'modules_{module_name}'],
             self.network.params[f'modules_target_{module_name}'],
@@ -329,8 +305,7 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
         """Sample actions from the actor."""
         dist = self.network.select('actor')(observations, latents,
                                             goal_encoded=True, temperature=temperature)
-        actions = dist.sample(seed=seed)
-        actions = jnp.clip(actions, -1, 1)
+        actions = jnp.clip(dist.mode(), -1, 1)
         return actions
 
     @classmethod
@@ -354,7 +329,7 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
 
         action_dim = ex_actions.shape[-1]
         ex_latents = jnp.ones((*ex_actions.shape[:-1], config['latent_dim']),
-                              dtype=ex_actions.dtype)
+                            dtype=ex_actions.dtype)
 
         # Define encoders.
         encoders = dict()
@@ -379,15 +354,15 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
             num_ensembles=2,
             gc_encoder=encoders.get('critic'),
         )
-        forward_repr_def = GCValue(
+        forward_repr_def = FBForwardMLP(
             hidden_dims=config['forward_repr_hidden_dims'],
             value_dim=config['latent_dim'],
             layer_norm=config['fb_repr_layer_norm'],
             num_ensembles=2,
             gc_encoder=encoders.get('forward_repr'),
         )
-        backward_repr_def = GCValue(
-            hidden_dims=config['backward_repr_hidden_dims'],
+        backward_repr_def = FBBackwardMLP(
+            hidden_dims=config['forward_repr_hidden_dims'],
             value_dim=config['latent_dim'],
             layer_norm=config['fb_repr_layer_norm'],
             num_ensembles=1,
@@ -397,6 +372,7 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
             hidden_dims=config['actor_hidden_dims'],
             action_dim=action_dim,
             state_dependent_std=False,
+            tanh_squash=True,
             layer_norm=config['actor_layer_norm'],
             const_std=config['const_std'],
             gc_encoder=encoders.get('actor'),
@@ -416,14 +392,17 @@ class ForwardBackwardRepresentationAgent(flax.struct.PyTreeNode):
         network_args = {k: v[1] for k, v in network_info.items()}
 
         network_def = ModuleDict(networks)
-        network_tx = optax.adam(learning_rate=config['lr'])
+        network_tx = optax.chain(
+            optax.clip_by_global_norm(1.0),
+            optax.adam(learning_rate=config['lr'])
+        )
         network_params = network_def.init(init_rng, **network_args)['params']
         network = TrainState.create(network_def, network_params, tx=network_tx)
 
         params = network_params
         params['modules_target_forward_repr'] = params['modules_forward_repr']
         params['modules_target_backward_repr'] = params['modules_backward_repr']
-
+        network = network.replace(params=params)
         return cls(rng, network=network, config=flax.core.FrozenDict(**config))
 
 
@@ -431,25 +410,25 @@ def get_config():
     config = ml_collections.ConfigDict(
         dict(
             agent_name='fb_repr',  # Agent name.
-            lr=3e-4,  # Learning rate.
-            batch_size=256,  # Batch size.
-            actor_hidden_dims=(512, 512, 512, 512),  # Actor network hidden dimensions.
+            lr=1e-4,  # Learning rate.
+            batch_size=512,  # Batch size.
+            actor_hidden_dims=(1024, 1024, 1024),  # Actor network hidden dimensions.
             value_hidden_dims=(512, 512, 512, 512),  # Value network hidden dimensions.
-            forward_repr_hidden_dims=(512, 512, 512, 512),  # Forward representation network hidden dimensions.
-            backward_repr_hidden_dims=(512, 512, 512, 512),  # Backward representation network hidden dimension.
+            forward_repr_hidden_dims=(1024, 1024, 1024),  # Forward representation network hidden dimensions.
+            backward_repr_hidden_dims=(256, 256, 256),  # Backward representation network hidden dimension.
             actor_layer_norm=False,  # Whether to use layer normalization for the actor.
-            value_layer_norm=True,  # Whether to use layer normalization for the critic.
+            value_layer_norm=False,  # Whether to use layer normalization for the critic.
             fb_repr_layer_norm=True,  # Whether to use layer normalization for the forward and the backward representations.
-            latent_dim=512,  # Latent dimension for transition latents.
-            discount=0.99,  # Discount factor.
-            tau=0.005,  # Target network update rate.
+            latent_dim=50,  # Latent dimension for transition latents.
+            discount=0.98,  # Discount factor.
+            tau=0.01,  # Target network update rate.
             expectile=0.9,  # IQL style expectile.
             actor_freq=4,  # Actor update frequency.
             repr_agg='mean',  # Aggregation method for target forward backward representation.
             orthonorm_coeff=1.0,  # orthonormalization coefficient
             latent_mix_prob=0.5,  # Probability to replace latents sampled from gaussian with backward representations.
-            alpha_repr=10.0,  # Temperature in BC coefficient in DDPG+BC.
-            alpha_awr=10.0,  # Temperature in IQL.
+            alpha_repr=1.0,  # Temperature in BC coefficient in DDPG+BC.
+            alpha_awr=1.0,  # Temperature in IQL.
             const_std=True,  # Whether to use constant standard deviation for the actor.
             normalize_q_loss=False,  # Whether to normalize the Q loss.
             num_latent_inference_samples=10_000,  # Number of samples used to infer the task-specific latent.
