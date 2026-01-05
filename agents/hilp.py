@@ -355,7 +355,6 @@ def get_config():
         dict(
             # Agent hyperparameters.
             agent_name='hilp',  # Agent name.
-            # Action data type (will be set automatically).
             lr=3e-4,  # Learning rate.
             batch_size=256,  # Batch size.
             actor_hidden_dims=(512, 512, 512, 512),  # Actor network hidden dimensions.
