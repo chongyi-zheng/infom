@@ -19,13 +19,13 @@
 
 </div>
 
-## Overview
+# Overview
 
 Intention-Conditioned Flow Occupancy Models (InFOM) is a latent variable model for pre-training and fine-tuning in reinforcement learning. (Left) The datasets are collected by users performing distinct tasks. (Center) We encode intentions by maximizing an evidence lower bound of data likelihood, (Right) enabling intention-aware future prediction using *flow matching*.
 
 This repository contains code for running the InFOM algorithm and eight baselines.
 
-## Installation
+# Installation
 
 1. Create an Anaconda environment: `conda create -n infom python=3.10.16 -y`
 2. Activate the environment: `conda activate infom`
@@ -42,11 +42,11 @@ This repository contains code for running the InFOM algorithm and eight baseline
     export PYOPENGL_PLATFORM=egl
     ```
 
-## Generating datasets
+# Generating datasets
 
 We provide scripts to generate datasets for pre-training and fine-tuning in the `data_gen_scripts` folder.
 
-### ExORL
+## ExORL
 
 <details>
 <summary><b>Click to expand the commands to generate ExORL datasets</b></summary>
@@ -135,7 +135,7 @@ The default directory to store the datasets is `~/.exorl`.
 
 </details>
 
-### OGBench
+## OGBench
 
 <details>
 <summary><b>Click to expand the commands to generate OGBench datasets</b></summary>
@@ -205,7 +205,7 @@ python data_gen_scripts/generate_manipspace.py --env_name=visual-puzzle-4x4-v0 -
 </details>
 
 
-## Running experiments
+# Running experiments
 
 Check the `agents` folder for available algorithms and default hyperparameters. Here are some example commands to run experiments:
 
@@ -222,7 +222,7 @@ python main.py --env_name=scene-play-singletask-task1-v0 --agent=agents/infom.py
 python main.py --env_name=visual-cube-double-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.expectile=0.95 --agent.kl_weight=0.01 --agent.alpha=30 --agent.encoder=impala_small
 ```
 
-### InFOM
+## InFOM
 
 <details>
 <summary><b>Click to expand the full list of commands</b></summary>
@@ -258,7 +258,7 @@ python main.py --env_name=visual-puzzle-4x4-play-singletask-task1-v0 --pretraini
 
 </details>
 
-### Baselines
+## Baselines
 
 <details>
 <summary><b>Click to expand the example commands for baselines</b></summary>
@@ -363,6 +363,17 @@ python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-pla
 
 </details>
 
-## Acknowledgments
+# Acknowledgements
 
 This codebase is adapted from [OGBench](https://github.com/seohongpark/ogbench) and [FQL](https://github.com/seohongpark/fql) implementations. References for baseline implementation include [DINO](https://github.com/facebookresearch/dino), [TD InfoNCE](https://github.com/chongyi-zheng/td_infonce), [FB](https://github.com/enjeeneer/zero-shot-rl), and [HILP](https://github.com/seohongpark/HILP).
+
+# Citation
+
+```bibtex
+@inproceedings{zheng2026intention,
+  title={Intention-Conditioned Flow Occupancy Models},
+  author={Zheng, Chongyi and Park, Seohong and Levine, Sergey and Eysenbach, Benjamin},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2026},
+}
+```
