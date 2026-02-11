@@ -8,3 +8,4 @@ dist/
 .idea/
 .ruff_cache/
 .vscode/
+exp/
