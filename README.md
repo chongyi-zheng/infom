@@ -258,29 +258,6 @@ python main.py --env_name=visual-puzzle-4x4-play-singletask-task1-v0 --pretraini
 
 </details>
 
-### Launching sweeps with `submitit`
-
-The `submitit/` folder contains SLURM launch scripts that sweep all InFOM
-hyperparameters from Appendix Tables 2 and 3. Each script enumerates the
-domains, tasks, and seeds reported in the paper (8 seeds for state-based
-tasks, 4 seeds for image-based tasks) and submits one job per
-(domain, task, seed) configuration.
-
-```
-# ExORL: 4 domains x 4 tasks x 8 seeds
-python submitit/infom_exorl.py
-
-# OGBench state-based: 4 domains x 5 tasks x 8 seeds
-python submitit/infom_ogbench_state.py
-
-# OGBench image-based (task 1 only): 4 envs x 4 seeds
-python submitit/infom_ogbench_visual.py
-```
-
-Cluster-specific paths, partitions, and accounts are resolved in
-[`submitit/cluster_utils.py`](submitit/cluster_utils.py); add a new branch
-to `get_cluster_config()` for an unrecognized host.
-
 ## Baselines
 
 <details>
