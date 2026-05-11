@@ -219,7 +219,7 @@ python main.py --env_name=cube-single-play-singletask-task1-v0 --agent=agents/in
 # InFOM on OGBench scene task 1
 python main.py --env_name=scene-play-singletask-task1-v0 --agent=agents/infom.py --agent.expectile=0.99 --agent.kl_weight=0.2 --agent.alpha=300
 # InFOM on OGBench visual cube double task 1
-python main.py --env_name=visual-cube-double-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.expectile=0.95 --agent.kl_weight=0.01 --agent.alpha=30 --agent.encoder=impala_small
+python main.py --env_name=visual-cube-double-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.9 --agent.kl_weight=0.01 --agent.alpha=30 --agent.encoder=impala_small
 ```
 
 ## InFOM
@@ -249,7 +249,7 @@ python main.py --env_name={puzzle-4x4-play-singletask-task1-v0, puzzle-4x4-play-
 # InFOM on OGBench visual cube single task 1
 python main.py --env_name=visual-cube-single-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.expectile=0.95 --agent.kl_weight=0.025 --agent.alpha=30 --agent.encoder=impala_small
 # InFOM on OGBench visual cube double task 1
-python main.py --env_name=visual-cube-double-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.95 --agent.kl_weight=0.01 --agent.alpha=30 --agent.encoder=impala_small
+python main.py --env_name=visual-cube-double-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.9 --agent.kl_weight=0.01 --agent.alpha=30 --agent.encoder=impala_small
 # InFOM on OGBench visual scene task 1
 python main.py --env_name=visual-scene-play-singletask-task1 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.99 --agent.kl_weight=0.1 --agent.alpha=300 --agent.encoder=impala_small
 # InFOM on OGBench visual puzzle 4x4 task 1
@@ -257,6 +257,29 @@ python main.py --env_name=visual-puzzle-4x4-play-singletask-task1-v0 --pretraini
 ```
 
 </details>
+
+### Launching sweeps with `submitit`
+
+The `submitit/` folder contains SLURM launch scripts that sweep all InFOM
+hyperparameters from Appendix Tables 2 and 3. Each script enumerates the
+domains, tasks, and seeds reported in the paper (8 seeds for state-based
+tasks, 4 seeds for image-based tasks) and submits one job per
+(domain, task, seed) configuration.
+
+```
+# ExORL: 4 domains x 4 tasks x 8 seeds
+python submitit/infom_exorl.py
+
+# OGBench state-based: 4 domains x 5 tasks x 8 seeds
+python submitit/infom_ogbench_state.py
+
+# OGBench image-based (task 1 only): 4 envs x 4 seeds
+python submitit/infom_ogbench_visual.py
+```
+
+Cluster-specific paths, partitions, and accounts are resolved in
+[`submitit/cluster_utils.py`](submitit/cluster_utils.py); add a new branch
+to `get_cluster_config()` for an unrecognized host.
 
 ## Baselines
 

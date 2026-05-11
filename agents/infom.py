@@ -61,12 +61,20 @@ class InFOMAgent(flax.struct.PyTreeNode):
         if self.config['critic_latent_type'] == 'prior':
             latents = jax.random.normal(
                 latent_rng,
-                shape=(self.config['num_flow_goals'], *actions.shape[:-1], self.config['latent_dim']),
+                shape=(*actions.shape[:-1], self.config['latent_dim']),
                 dtype=observations.dtype,
+            )
+            latents = jnp.broadcast_to(
+                latents[None],
+                (self.config['num_flow_goals'], *latents.shape)
             )
         elif self.config['critic_latent_type'] == 'encoding':
             latent_dist = self.network.select('intention_encoder')(next_observations, next_actions)
-            latents = latent_dist.sample(seed=latent_rng, sample_shape=self.config['num_flow_goals'])
+            latents = latent_dist.sample(seed=latent_rng)
+            latents = jnp.broadcast_to(
+                latents[None],
+                (self.config['num_flow_goals'], *latents.shape)
+            )
         flow_goals = self.compute_fwd_flow_goals(
             noises,
             jnp.broadcast_to(
@@ -141,7 +149,7 @@ class InFOMAgent(flax.struct.PyTreeNode):
             jax.lax.stop_gradient(observations - current_noises) - current_vf_pred).mean(axis=-1)
 
         future_noises = jax.random.normal(
-            current_noise_rng, shape=observations.shape, dtype=observations.dtype)
+            future_noise_rng, shape=observations.shape, dtype=observations.dtype)
         flow_future_observations = self.compute_fwd_flow_goals(
             future_noises, next_observations, next_actions, jax.lax.stop_gradient(latents),
             observation_min=batch.get('observation_min', None),
