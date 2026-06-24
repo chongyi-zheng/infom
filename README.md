@@ -213,11 +213,11 @@ Check the `agents` folder for available algorithms and default hyperparameters. 
 # InFOM on ExORL cheetah run
 python main.py --env_name=cheetah_run --agent=agents/infom.py --agent.kl_weight=0.05 --agent.alpha=0.3
 # InFOM on ExORL quadruped jump
-python main.py --env_name=quadruped_jump --agent=agents/infom.py --agent.kl_weight=0.005 --agent.alpha=0.3
+python main.py --env_name=quadruped_jump --agent=agents/infom.py --agent.kl_weight=0.005 --agent.alpha=10
 # InFOM on OGBench cube single task 1
-python main.py --env_name=cube-single-play-singletask-task1-v0 --agent=agents/infom.py --agent.expectile=0.95 --agent.kl_weight=0.05 --agent.alpha=30
+python main.py --env_name=cube-single-play-singletask-task1-v0 --agent=agents/infom.py --agent.expectile=0.99 --agent.kl_weight=0.1 --agent.alpha=100 --agent.critic_latent_type=encoding
 # InFOM on OGBench scene task 1
-python main.py --env_name=scene-play-singletask-task1-v0 --agent=agents/infom.py --agent.expectile=0.99 --agent.kl_weight=0.2 --agent.alpha=300
+python main.py --env_name=scene-play-singletask-task1-v0 --agent=agents/infom.py --agent.expectile=0.99 --agent.kl_weight=0.025 --agent.alpha=300 --agent.critic_latent_type=encoding
 # InFOM on OGBench visual cube double task 1
 python main.py --env_name=visual-cube-double-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.9 --agent.kl_weight=0.01 --agent.alpha=30 --agent.encoder=impala_small
 ```
@@ -233,18 +233,18 @@ python main.py --env_name={cheetah_run, cheetah_run_backward, cheetah_walk, chee
 # InFOM on ExORL walker {walk, run, stand, flip}
 python main.py --env_name={walker_walk, walker_run, walker_stand, walker_flip} --agent=agents/infom.py --agent.kl_weight=0.1 --agent.alpha=0.3
 # InFOM on ExORL quadruped {run, jump, stand, walk}
-python main.py --env_name={quadruped_run, quadruped_jump, quadruped_stand, quadruped_walk} --agent=agents/infom.py --agent.kl_weight=0.005 --agent.alpha=0.3
+python main.py --env_name={quadruped_run, quadruped_jump, quadruped_stand, quadruped_walk} --agent=agents/infom.py --agent.kl_weight=0.005 --agent.alpha=10
 # InFOM on ExORL jaco {reach top left, reach top right, reach bottom left, reach bottom right}
 python main.py --env_name={jaco_reach_top_left, jaco_reach_top_right, jaco_reach_bottom_left, jaco_reach_bottom_right} --agent=agents/infom.py --agent.kl_weight=0.2 --agent.alpha=0.1
 
 # InFOM on OGBench cube single {task 1, task 2, task 3, task 4, task 5}
-python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/infom.py --agent.kl_weight=0.05 --agent.expectile=0.95 --agent.alpha=30
+python main.py --env_name={cube-single-play-singletask-task1-v0, cube-single-play-singletask-task2-v0, cube-single-play-singletask-task3-v0, cube-single-play-singletask-task4-v0, cube-single-play-singletask-task5-v0} --agent=agents/infom.py --agent.kl_weight=0.1 --agent.expectile=0.99 --agent.alpha=100 --agent.critic_latent_type=encoding
 # InFOM on OGBench cube double {task 1, task 2, task 3, task 4, task 5}
-python main.py --env_name={cube-double-play-singletask-task1-v0, cube-double-play-singletask-task2-v0, cube-double-play-singletask-task3-v0, cube-double-play-singletask-task4-v0, cube-double-play-singletask-task5-v0} --agent=agents/infom.py --agent.latent_dim=128 --agent.kl_weight=0.025 --agent.expectile=0.9 --agent.alpha=30
+python main.py --env_name={cube-double-play-singletask-task1-v0, cube-double-play-singletask-task2-v0, cube-double-play-singletask-task3-v0, cube-double-play-singletask-task4-v0, cube-double-play-singletask-task5-v0} --agent=agents/infom.py --agent.latent_dim=128 --agent.kl_weight=0.025 --agent.expectile=0.9 --agent.alpha=30 --agent.critic_latent_type=encoding
 # InFOM on OGBench scene {task 1, task 2, task 3, task 4, task 5}
-python main.py --env_name={scene-play-singletask-task1-v0, scene-play-singletask-task2-v0, scene-play-singletask-task3-v0, scene-play-singletask-task4-v0, scene-play-singletask-task5-v0} --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.99 --agent.kl_weight=0.2 --agent.alpha=300
+python main.py --env_name={scene-play-singletask-task1-v0, scene-play-singletask-task2-v0, scene-play-singletask-task3-v0, scene-play-singletask-task4-v0, scene-play-singletask-task5-v0} --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.99 --agent.kl_weight=0.025 --agent.alpha=300 --agent.critic_latent_type=encoding
 # InFOM on OGBench puzzle 4x4 {task 1, task 2, task 3, task 4, task 5}
-python main.py --env_name={puzzle-4x4-play-singletask-task1-v0, puzzle-4x4-play-singletask-task2-v0, puzzle-4x4-play-singletask-task3-v0, puzzle-4x4-play-singletask-task4-v0, puzzle-4x4-play-singletask-task5-v0} --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.95 --agent.kl_weight=0.1 --agent.alpha=300
+python main.py --env_name={puzzle-4x4-play-singletask-task1-v0, puzzle-4x4-play-singletask-task2-v0, puzzle-4x4-play-singletask-task3-v0, puzzle-4x4-play-singletask-task4-v0, puzzle-4x4-play-singletask-task5-v0} --agent=agents/infom.py --agent.latent_dim=128 --agent.expectile=0.95 --agent.kl_weight=0.1 --agent.alpha=1000 --agent.critic_latent_type=encoding
 
 # InFOM on OGBench visual cube single task 1
 python main.py --env_name=visual-cube-single-play-singletask-task1-v0 --pretraining_steps=250_000 --finetuning_steps=100_000 --eval_interval=10_000 --save_interval=750_000 --p_aug=0.5 --frame_stack=3 --agent=agents/infom.py --agent.expectile=0.95 --agent.kl_weight=0.025 --agent.alpha=30 --agent.encoder=impala_small
